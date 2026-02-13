@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A little surprise...</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pink-main: #ffcad4;
+            --pink-dark: #f19eb0;
+            --white-soft: #fffbff;
+            --text-color: #5d2e46;
+        }
+
+        body {
+            background-color: var(--pink-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', 'Comic Sans MS', cursive;
+            overflow: hidden;
+        }
+
+        /* --- SCREENS --- */
+        #password-screen { text-align: center; z-index: 20; }
+        #start-screen { display: none; text-align: center; z-index: 10; }
+        
+        .pass-card, .natural-card {
+            background: var(--white-soft);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border: 3px solid var(--white-soft);
+        }
+
+        input[type="password"] {
+            padding: 12px; border-radius: 15px; border: 2px solid var(--pink-main);
+            outline: none; text-align: center; font-family: inherit;
+            margin-bottom: 15px; width: 80%; font-size: 1.2rem; letter-spacing: 5px;
+        }
+
+        /* --- BENTO BOX --- */
+        #bento-container {
+            display: none;
+            grid-template-columns: 2fr 1fr; 
+            grid-template-rows: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 600px;
+            width: 95%;
+            z-index: 10;
+        }
+
+        .bento-item {
+            background: var(--white-soft);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 6px 0px var(--pink-dark);
+            border: 2px solid var(--pink-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pop 0.5s ease forwards;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .main-msg { grid-row: span 3; text-align: left; padding: 25px; align-items: flex-start; }
+        .side-item { font-size: 2.5rem; }
+        
+        .text-body {
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-line;
+            margin: 0;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            padding: 0;
+        }
+        
+        .action-btn:hover { transform: scale(1.2); }
+
+        .cute-btn {
+            background: var(--pink-dark);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        #bearBtn { display: none; }
+
+        .star-bg {
+            position: fixed; background: white;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: twinkle var(--d) infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="password-screen">
+        <div class="pass-card">
+            <span style="font-size: 2rem;">🔒</span>
+            <p>Enter the code to unlock:</p>
+            <input type="password" id="passInput" placeholder="••••••">
+            <br>
+            <button class="cute-btn" onclick="checkPassword()">Unlock</button>
+        </div>
+    </div>
+
+    <div id="start-screen">
+        <div class="natural-card">
+            <span style="font-size: 3rem;">🐻</span>
+            <p style="font-weight: bold;">Hi! I have a little note for you.</p>
+            <button class="cute-btn" onclick="openBento()">Read it here</button>
+        </div>
+    </div>
+
+    <div id="bento-container">
+        <div class="bento-item main-msg">
+            <p class="text-body" id="letterText">
+                Hi, Aiden. I just wanted to be honest with you about something—I like you.
+                
+                I’m not saying this to pressure you or expect you to feel the same way. I just didn’t want to keep pretending anymore. I’ve been trying to move on for a while now, but I realized I can’t just ignore how I feel.
+                
+                I hope you reply (if kaila ka nako), even if it’s just to let me know what’s on your mind. If you don’t feel the same way, I truly understand. That’s all I wanted to say.
+            </p>
+        </div>
+
+        <div class="bento-item side-item">🧸</div>
+        
+        <div class="bento-item">
+            <button class="action-btn" id="lotusBtn" onclick="revealFinalLetter()">🪷</button>
+            <button class="action-btn" id="bearBtn" onclick="finalPolarBearPop()">🐻‍❄️</button>
+        </div>
+        
+        <div class="bento-item side-item">🐼</div>
+    </div>
+
+    <script>
+        const SECRET_PASSWORD = "122211"; 
+
+        function checkPassword() {
+            if(document.getElementById('passInput').value === SECRET_PASSWORD) {
+                document.getElementById('password-screen').style.display = 'none';
+                document.getElementById('start-screen').style.display = 'block';
+            } else { alert("Wrong code! 🐻"); }
+        }
+
+        function openBento() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('bento-container').style.display = 'grid';
+            makeStars();
+        }
+
+        function revealFinalLetter() {
+            const letter = document.getElementById('letterText');
+            letter.innerHTML = "<b>Thank you for reading my confession.</b>\n\nHappy Valentines. I really want to know what you think about me liking you if you only see me as a friend thats fine I just want to confess.";
+            
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                colors: ['#ffffff', '#ffcad4', '#f19eb0']
+            });
+
+            document.getElementById('lotusBtn').style.display = 'none';
+            document.getElementById('bearBtn').style.display = 'block';
+        }
+
+        function finalPolarBearPop() {
+            const letter = document.getElementById('letterText');
+            letter.innerHTML = "<b>Bye,Aiden</b>";
+
+            // Lavender and White Confetti
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                colors: ['#E6E6FA', '#D8BFD8', '#FFFFFF', '#B19CD9']
+            });
+
+            setTimeout(() => {
+                location.reload(); 
+            }, 2000);
+        }
+
+        function makeStars() {
+            for (let i = 0; i < 25; i++) {
+                const s = document.createElement('div');
+                s.className = 'star-bg';
+                s.style.width = s.style.height = Math.random() * 15 + 10 + 'px';
+                s.style.top = Math.random() * 100 + 'vh';
+                s.style.left = Math.random() * 100 + 'vw';
+                s.style.setProperty('--d', (Math.random() * 2 + 2) + 's');
+                document.body.appendChild(s);
+            }
+        }
+    </script>
+</body>
+</html>
